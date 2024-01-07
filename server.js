@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
-const port = process.env.PORT || 3000;
+require('dotenv').config();
+const port = process.env.PORT || 1809;
 const TelegramBot = require("node-telegram-bot-api");
 const token = "6924858012:AAEr70Vrbc9_nVYlu1IORn5yvEkyiF76_Ik";
 const bot = new TelegramBot(token, { polling: true });
@@ -20,7 +21,19 @@ app.get('/', function (req, res) {
     //     }
     //     console.log(`stdout: ${stdout}`);
     // });
-});
+})
+const initialKeyboard = [
+    ["Restart Keyboard"],
+    ["Max Vol", "Mute"],
+    ["Open VSCode", "Stacer"],
+    ["On/Off Action"]
+]
+const initialreplyMarkup = {
+    keyboard: initialKeyboard,
+    resize_keyboard: true,
+    one_time_keyboard: false
+
+};
 function performAction(command) {
     exec(command, (error, stdout, stderr) => {
         if (error) {
@@ -51,15 +64,19 @@ bot.on("message", (message) => {
     console.log(message.text);
     const chatId = message.chat.id;
     if (message.text.includes("/start") || message.text.includes("Restart Keyboard")) {
+
+        bot.sendMessage(chatId, `Bot on, keyboard available`, {
+            reply_markup: initialreplyMarkup,
+        });
+    }
+    if (message.text == ("On/Off Action")) {
         const replyMarkup = {
             keyboard: [
-                ["Max Vol", "Mute"],
-                ["Open VSCode", "Stacer"],
                 ["Shut down", "Restart"],
-                ["Restart Keyboard"]
+                ["Cancel On/Off"]
             ],
             resize_keyboard: true,
-            one_time_keyboard: false
+            one_time_keyboard: true
 
         };
         bot.sendMessage(chatId, `Bot on, keyboard available`, {
@@ -76,7 +93,10 @@ bot.on("message", (message) => {
         getAction(chatId, 'amixer sset Master 100%')
     }
     if (message.text == ("Restart")) {
-        getAction(chatId, 'echo restart')
+        getAction(chatId, 'sleep 5 ; shutdown -r now')
+    }
+    if (message.text == ("Shutdown")) {
+        getAction(chatId, 'sleep 5 ; shutdown -h now')
     }
     if (message.text == ("ls")) {
         getAction(chatId, 'ls')
@@ -87,5 +107,13 @@ bot.on("message", (message) => {
     if (message.text == ("Stacer")) {
         getAction(chatId, 'stacer')
     }
+    if (message.text == ("Cancel On/Off")) {
+        bot.sendMessage(chatId, `Cancelled`, {
+            reply_markup: initialreplyMarkup,
+        });
+    }
 });
 
+app.listen(port, () => {
+    console.log(`App listening on port ${port}`);
+});
