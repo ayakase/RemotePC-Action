@@ -3,7 +3,7 @@ const app = express();
 require('dotenv').config();
 const port = process.env.PORT || 1809;
 const TelegramBot = require("node-telegram-bot-api");
-const token = "6924858012:AAEr70Vrbc9_nVYlu1IORn5yvEkyiF76_Ik";
+const token = process.env.TELEGRAM_TOKEN;
 const bot = new TelegramBot(token, { polling: true });
 
 const { exec } = require('child_process');
