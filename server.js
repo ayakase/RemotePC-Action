@@ -94,9 +94,15 @@ bot.on("message", (message) => {
     }
     if (message.text == ("Restart")) {
         getAction(chatId, 'sleep 5 ; shutdown -r now')
+        bot.sendMessage(chatId, `Restarted`, {
+            reply_markup: initialreplyMarkup,
+        });
     }
     if (message.text == ("Shutdown")) {
         getAction(chatId, 'sleep 5 ; shutdown -h now')
+        bot.sendMessage(chatId, `Shut down`, {
+            reply_markup: initialreplyMarkup,
+        });
     }
     if (message.text == ("ls")) {
         getAction(chatId, 'ls')
